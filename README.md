@@ -136,7 +136,7 @@ interface SubmitOrderResponse {
 ###  Интерфейс взаимодействия с API
 ```ts
 interface APIHandler {
-    getProduct: (productId: string) => Promise<APIProductItem>;
+    : (productId: string) => Promise<APIProductItem>;
     getProducts: () => Promise<ProductListAPI>;
     placeOrder: (orderDetails: SubmitOrderRequest) => Promise<SubmitOrderResponse>;
 }
