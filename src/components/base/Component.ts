@@ -26,13 +26,13 @@ export abstract class Component<T> {
         }
     }
 
-    // Скрыть элемент
-    hide(element: HTMLElement) {
+    // Скрыть
+     protected setHidden(element: HTMLElement) {
         element.style.display = 'none';
     }
 
-    // Показать элемент
-    show(element: HTMLElement) {
+    // Показать
+    protected setVisible(element: HTMLElement) {
         element.style.removeProperty('display');
     }
 

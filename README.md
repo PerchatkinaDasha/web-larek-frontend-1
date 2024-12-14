@@ -107,7 +107,7 @@ interface APIProductItem {
 ```
 ###  Интерфейс API для списка товаров
 ```ts
-interface APIProductList {
+interface ProductListAPI {
     totalCount: number;
     productItems: APIProductItem[];
 }
@@ -136,8 +136,8 @@ interface SubmitOrderResponse {
 ###  Интерфейс взаимодействия с API
 ```ts
 interface APIHandler {
-    fetchProduct: (productId: string) => Promise<APIProductItem>;
-    fetchProductList: () => Promise<APIProductList>;
+    getProduct: (productId: string) => Promise<APIProductItem>;
+    getProducts: () => Promise<ProductListAPI>;
     placeOrder: (orderDetails: SubmitOrderRequest) => Promise<SubmitOrderResponse>;
 }
 ```
@@ -327,10 +327,10 @@ interface ConfirmationPage {
 
 #### `Методы класса:`
 
-`setProductList(items: HTMLElement[])`
+`displayedProductList(items: HTMLElement[])`
 Устанавливает список товаров.
 
-`setBasketItemCount(value: number)`
+`cartItemCount(value: number)`
 Устанавливает количество товаров в корзине.
 
 ### Класс Card
@@ -413,7 +413,7 @@ setPaymentMethod(value: PaymentOption)`
 `setButtonState(isValid: boolean)`
 Управляет активностью кнопки "Продолжить оформление заказа".
 
-### Класс UserInfo
+### Класс InfoUser
 Отображение формы с контактными данными пользователя.
 
 #### `Методы класса:`
@@ -430,7 +430,7 @@ setPaymentMethod(value: PaymentOption)`
 `setButtonState(isValid: boolean)`
 Управляет активностью кнопки "Оплатить".
 
-### Класс SuccessPage
+### Класс OrderSuccessPage
 Отображение страницы успеха после оформления заказа.
 
 #### `Методы класса:`
@@ -438,5 +438,27 @@ setPaymentMethod(value: PaymentOption)`
 `setTotal(value: number)`
 Устанавливает общую стоимость заказа.
 
+## Слой коммуникации
+### Класс ShopApi
+ShopApi — это основной класс для взаимодействия с сервером, который реализует интерфейс APIHandler и расширяет базовый класс Api. Он предоставляет методы для выполнения запросов к серверу и обработки данных.
 
+#### Конструктор
+Конструктор класса принимает два параметра:
+
+`baseUrl` — базовый URL для всех запросов.
+`options` — объект дополнительных настроек (например, заголовки или параметры аутентификации), передаваемый в конструктор родительского класса Api.
+Разрешенные типы запросов:
+```ts
+
+type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+ ```
+#### Методы класса:
+`getProduct(productId: string): Promise<ProductItemAPI>`
+Выполняет GET-запрос к API для получения информации об одном товаре по его идентификатору (productId). Возвращает промис с объектом типа ProductItemAPI.
+
+`getProducts(): Promise<ProductListAPI>`
+Выполняет GET-запрос для получения массива всех доступных товаров. Возвращает промис с объектом типа ProductListAPI.
+
+`placeOrder(orderDetails: SubmitOrderRequest): Promise<SubmitOrderResponse>`
+Выполняет POST-запрос для отправки данных о заказе. Возвращает промис с объектом ответа типа SubmitOrderResponse.
 
