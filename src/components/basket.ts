@@ -64,6 +64,11 @@ export class CardBasket extends Component<CartItem> {
     }
 
     set price(value: number) { 
-        this.setText(this.priceItem, `${value}`); 
+        if (value === null) {
+            this.setText(this.priceItem, "Бесценно");
+        } else {
+            this.setText(this.priceItem, `${value} синапсов`);
+        }
     }
 }
+

@@ -239,10 +239,7 @@ interface ConfirmationPage {
 #### `Методы класса`:
 -`setProducts(products: ProductItem[])`
 Загружает список товаров.
-
--`addProductToList(product: ProductItem)`
-Добавляет товар в список.
-
+npm 
 -`getProductById(id: string): ProductItem | undefined`
 Возвращает товар по его uniqueId.
 

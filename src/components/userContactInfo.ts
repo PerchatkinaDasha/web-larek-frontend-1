@@ -19,8 +19,13 @@ export class InfoUser extends Component<UserContactInfo> implements UserContactI
         this.nextButton = ensureElement('.button', this.container) as HTMLButtonElement;
         this.errorMessage = ensureElement('.form__errors', this.container) as HTMLElement;
 
-        this.emailInput.addEventListener('change', () => this.events.emit('inputEmail:change', {value: this.emailInput.value}));
-        this.phoneInput.addEventListener('change', () => this.events.emit('inputPhone:change', {value: this.phoneInput.value}));
+        this.emailInput.addEventListener('input', () => 
+            this.events.emit('inputEmail:change', { value: this.emailInput.value })
+        );
+        
+        this.phoneInput.addEventListener('input', () => 
+            this.events.emit('inputPhone:change', { value: this.phoneInput.value })
+        );
 
         this.formElement.addEventListener('submit', (evt) => {
             evt.preventDefault();

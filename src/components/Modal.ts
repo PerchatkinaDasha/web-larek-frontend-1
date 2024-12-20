@@ -36,7 +36,7 @@ export class ModalBase<T> extends Component<T> {
     // Закрытие модального окна при клике вне его содержимого
     this.container.addEventListener("mousedown", (evt: MouseEvent) => {
       if (evt.target === evt.currentTarget) {
-        this.close();
+        this.close(true); // Передаем флаг для обновления счётчика
       }
     });
 
@@ -56,13 +56,19 @@ export class ModalBase<T> extends Component<T> {
   /**
    * Закрытие модального окна.
    * Удаляет CSS-класс, очищает содержимое окна и снимает обработчик клавиши Escape.
+   * @param {boolean} [updateCounter=false] Флаг, указывающий на необходимость обновления счётчика.
    */
-  close() {
+  close(updateCounter = false) {
     this.container.classList.remove("modal_active");  // Убираем класс, чтобы скрыть модалку
     if (this._content) {
       this._content.innerHTML = "";  // Очистка содержимого модального окна
     }
     document.removeEventListener("keyup", this.handleEscUp);  // Убираем слушатель клавиши Escape
+
+    // Обновление счётчика товаров, если это требуется
+    if (updateCounter) {
+      this.events.emit('modal:closed'); // Генерируем событие закрытия модалки
+    }
   }
 
   /**
