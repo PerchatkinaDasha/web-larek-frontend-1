@@ -71,4 +71,3 @@ export class CardBasket extends Component<CartItem> {
         }
     }
 }
-

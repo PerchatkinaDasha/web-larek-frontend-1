@@ -4,7 +4,7 @@ import { api } from './components/ShopAPI';
 import { EventEmitter } from './components/base/events';
 import { Page } from './components/page';
 import { Card, CardPreview } from './components/card';
-import { Modal } from './components/modalView';
+import { Modal } from './components/Modal';
 import { Basket, CardBasket } from './components/basket';
 import { SettingsOrder } from './components/SettingsOrder';
 import { InfoUser } from './components/userContactInfo';

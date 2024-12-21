@@ -4,16 +4,18 @@ import { IEvents } from "./base/events";
 
 /**
  * Базовый класс модального окна
- * 
+ *
  * @template T Тип данных, ассоциируемый с модальным окном.
  */
-export class ModalBase<T> extends Component<T> {
+export class Modal<T> extends Component<T> {
   // Основной контейнер модального окна
   protected modal: HTMLElement;
   // Объект для управления событиями
   protected events: IEvents;
   // Контейнер для динамического содержимого модального окна
-  protected _content: HTMLElement | null;
+  protected contentContainer: HTMLElement;
+  // Кнопка закрытия модального окна
+  protected closeButton: HTMLButtonElement;
 
   /**
    * Конструктор модального окна.
@@ -25,18 +27,18 @@ export class ModalBase<T> extends Component<T> {
     this.events = events;
 
     // Поиск содержимого модального окна и кнопки закрытия
-    this._content = ensureElement('.modal__content', container) as HTMLElement | null;
-    const closeButtonElement = ensureElement('.modal__close', this.container) as HTMLButtonElement | null;
+    this.contentContainer = ensureElement('.modal__content', container);
+    this.closeButton = ensureElement('.modal__close', container) as HTMLButtonElement;
 
     // Установка обработчика на кнопку закрытия модального окна
-    if (closeButtonElement) {
-      closeButtonElement.addEventListener("click", this.close.bind(this));
+    if (this.closeButton) {
+      this.closeButton.addEventListener('click', () => this.close(true));
     }
 
     // Закрытие модального окна при клике вне его содержимого
     this.container.addEventListener("mousedown", (evt: MouseEvent) => {
       if (evt.target === evt.currentTarget) {
-        this.close(true); // Передаем флаг для обновления счётчика
+        this.close(true); // Передаем true, чтобы обновить счётчик
       }
     });
 
@@ -49,8 +51,8 @@ export class ModalBase<T> extends Component<T> {
    * Добавляет CSS-класс для отображения окна и устанавливает обработчик нажатия клавиши Escape.
    */
   open() {
-    this.container.classList.add("modal_active");  // Добавляем класс, чтобы показать модалку
-    document.addEventListener("keyup", this.handleEscUp);  // Слушаем клавишу Escape для закрытия
+    this.container.classList.add("modal_active"); // Добавляем класс, чтобы показать модалку
+    document.addEventListener("keyup", this.handleEscUp); // Слушаем клавишу Escape для закрытия
   }
 
   /**
@@ -59,11 +61,11 @@ export class ModalBase<T> extends Component<T> {
    * @param {boolean} [updateCounter=false] Флаг, указывающий на необходимость обновления счётчика.
    */
   close(updateCounter = false) {
-    this.container.classList.remove("modal_active");  // Убираем класс, чтобы скрыть модалку
-    if (this._content) {
-      this._content.innerHTML = "";  // Очистка содержимого модального окна
+    this.container.classList.remove("modal_active"); // Убираем класс, чтобы скрыть модалку
+    if (this.contentContainer) {
+      this.contentContainer.innerHTML = ""; // Очистка содержимого модального окна
     }
-    document.removeEventListener("keyup", this.handleEscUp);  // Убираем слушатель клавиши Escape
+    document.removeEventListener("keyup", this.handleEscUp); // Убираем слушатель клавиши Escape
 
     // Обновление счётчика товаров, если это требуется
     if (updateCounter) {
@@ -77,7 +79,16 @@ export class ModalBase<T> extends Component<T> {
    */
   handleEscUp(evt: KeyboardEvent) {
     if (evt.key === "Escape") {
-      this.close();
+      this.close(true); // Обновляем счётчик при закрытии через Escape
     }
+  }
+
+  /**
+   * Устанавливает новый контент в модальное окно.
+   * @param {HTMLElement} content Новый контент для модального окна.
+   */
+  set modalContent(content: HTMLElement) {
+    this.contentContainer.innerHTML = ""; // Очищаем старое содержимое
+    this.contentContainer.appendChild(content); // Добавляем новый контент
   }
 }
