@@ -80,6 +80,7 @@ events.on('inBasket:click', ({ id }: { id: string }) => {
     orderModel.addProduct(id);
     cardPreview.buttonText('Из корзины');
   }
+  
 });
 
 // Функция для рендеринга корзины
@@ -120,32 +121,25 @@ events.on('deleteProduct:click', ({ id }: { id: string }) => {
 });
 
 // Функция для рендеринга страницы настроек заказа
-function renderSettingsOrder() {
-  const payment = orderModel.getPaymentMethod();
-  const address = orderModel.getDeliveryAddress();
-  let error = '';
-  let isValid = false;
+function renderSettingsOrder() {  
+  const payment = orderModel.getPaymentMethod();  
+  const address = orderModel.getDeliveryAddress();  
 
-  // Перенос валидации в модель данных
-  if (payment === '') {
-    error = 'Выберите способ оплаты';
-  } else if (address === '') {
-    error = 'Введите адрес доставки заказа';
-  } else {
-    isValid = true;
-  }
+  // Валидация через модель
+  const { isValid, error } = orderModel.validateOrder();
+ 
+  const orderHTML = orderSettings.render({  
+    address: address,  
+    payment: payment,  
+    error: error,  
+    valid: isValid,  
+  });  
+ 
+  modal.render({  
+    modalContent: orderHTML,  
+  });  
+}  
 
-  const orderHTML = orderSettings.render({
-    address: address,
-    payment: payment,
-    error: error,
-    valid: isValid,
-  });
-
-  modal.render({
-    modalContent: orderHTML,
-  });
-}
 
 // Обработка клика на кнопку для перехода к настройкам заказа
 events.on('placeOrder:click', () => {
@@ -161,52 +155,42 @@ events.on('payment:click', ({ paymentOrder }: { paymentOrder: PaymentOption }) =
 // Обработка изменения адреса доставки
 events.on('inputAddress:change', ({ value }: { value: string }) => {
   orderModel.editOrder({ address: value });
-  renderSettingsOrder();
+  // Нет необходимости вызывать renderSettingsOrder() здесь
 });
 
 // Функция для рендеринга страницы информации о пользователе
-function renderUserInfo() {
-  const email = orderModel.getUserEmail();
-  const phone = orderModel.getUserPhone();
-  let error = '';
-  let isValid = false;
+function renderUserInfo() {  
+  const email = orderModel.getUserEmail();  
+  const phone = orderModel.getUserPhone();  
 
-  // Валидация данных перенесена в модель
-  if (email === '') {
-    error = 'Введите email';
-  } else if (phone === '') {
-    error = 'Введите телефон';
-  } else {
-    isValid = true;
-  }
+  // Валидация через модель
+  const { isValid, error } = orderModel.validateUserInfo();
 
-  const userInfoHTML = userInfo.render({
-    email: email,
-    phone: phone,
-    error: error,
-    valid: isValid,
-  });
+  const userInfoHTML = userInfo.render({  
+    email: email,  
+    phone: phone,  
+    error: error,  
+    valid: isValid,  
+  });  
 
-  modal.render({
-    modalContent: userInfoHTML,
-  });
-}
+  modal.render({  
+    modalContent: userInfoHTML,  
+  });  
+}  
 
 // Переход к вводу информации о пользователе
 events.on('settingsNext:click', () => {
   renderUserInfo();
 });
 
-// Обработка изменения email
 events.on('inputEmail:change', ({ value }: { value: string }) => {
   orderModel.editOrder({ email: value });
-  renderUserInfo();
+  renderUserInfo(); // Обновляем отображение
 });
 
-// Обработка изменения телефона
 events.on('inputPhone:change', ({ value }: { value: string }) => {
   orderModel.editOrder({ phone: value });
-  renderUserInfo();
+  renderUserInfo(); // Обновляем отображение
 });
 
 // Обработка клика для подтверждения информации пользователя и оформления заказа
@@ -248,9 +232,10 @@ events.on('userInfoNext:click', () => {
 });
 
 
-events.on('modal:closed', () => {
-  const counter = orderModel.getProductCount();
-  page.render({
-    cartItemCount: counter,
-  });
-});
+events.on('success:click', () => {  
+  modal.close();  
+  const counter = orderModel.getProductCount();  
+  page.render({  
+    cartItemCount: counter,  
+  });  
+});  

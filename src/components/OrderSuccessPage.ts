@@ -11,8 +11,18 @@ export class OrderSuccessPage extends Component<ConfirmationPage> implements Con
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
         this.totalOrder = ensureElement('.order-success__description', this.container) as HTMLElement;
+        
+        // Находим кнопку "за новыми покупками"
         this.nextButton = ensureElement('.order-success__close', this.container) as HTMLButtonElement;
-        this.nextButton.addEventListener('click', () => this.events.emit('success:click'));
+
+        // Добавляем обработчик нажатия на кнопку
+        this.nextButton.addEventListener('click', () => {
+            // Генерируем событие 'success:click' для закрытия модалки
+            this.events.emit('success:click');
+
+            // Закрываем модальное окно
+            this.events.emit('modal:closed');
+        });
     }
 
     set total(value: number) {
