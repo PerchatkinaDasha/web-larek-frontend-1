@@ -3,9 +3,11 @@ import { cloneTemplate, ensureElement } from './utils/utils';
 import { api } from './components/ShopAPI';
 import { EventEmitter } from './components/base/events';
 import { Page } from './components/page';
-import { Card, CardPreview } from './components/card';
+import { Card } from './components/card';
+import { CardPreview } from './components/CardPreview';
 import { Modal } from './components/Modal';
-import { Basket, CardBasket } from './components/basket';
+import { Basket } from './components/basket';
+import { CardBasket } from './components/CardBasket';
 import { SettingsOrder } from './components/SettingsOrder';
 import { InfoUser } from './components/userContactInfo';
 import { OrderSuccessPage } from './components/OrderSuccessPage';
@@ -80,7 +82,6 @@ events.on('inBasket:click', ({ id }: { id: string }) => {
     orderModel.addProduct(id);
     cardPreview.buttonText('Из корзины');
   }
-  
 });
 
 // Функция для рендеринга корзины
@@ -139,7 +140,6 @@ function renderSettingsOrder() {
     modalContent: orderHTML,  
   });  
 }  
-
 
 // Обработка клика на кнопку для перехода к настройкам заказа
 events.on('placeOrder:click', () => {
@@ -231,11 +231,13 @@ events.on('userInfoNext:click', () => {
     .catch((err) => console.log(err));
 });
 
+// Обновляем счётчик корзины при закрытии модалки
+events.on('modal:closed', () => {
+  const counter = orderModel.getProductCount();
+  page.render({ cartItemCount: counter });
+});
 
-events.on('success:click', () => {  
-  modal.close();  
-  const counter = orderModel.getProductCount();  
-  page.render({  
-    cartItemCount: counter,  
-  });  
-});  
+// Обработка успешного завершения заказа
+events.on('success:click', () => {
+  modal.close(true); // Указываем, что нужно обновить счётчик
+});
